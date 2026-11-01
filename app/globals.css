@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-poppins), var(--font-hind-siliguri), ui-sans-serif, system-ui;
+  --font-bengali: var(--font-hind-siliguri), sans-serif;
+  
+  --color-bg-dark: #040817;
+  --color-card-bg: #09132b;
+  --color-card-inner: #0d1b3e;
+  --color-neon-green: #00ff88;
+  --color-neon-cyan: #00f2fe;
+  --color-neon-yellow: #ffea00;
+  --color-neon-pink: #ff007f;
+  --color-accent-blue: #0072ff;
+  --color-text-muted: #94a3b8;
+}
+
+body {
+  background-image: radial-gradient(circle at 50% 0%, #102456 0%, #040817 75%);
+  min-height: 100vh;
+}
+
+.font-bengali {
+  font-family: var(--font-hind-siliguri);
+}

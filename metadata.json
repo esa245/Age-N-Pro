@@ -1,0 +1,6 @@
+{
+  "name": "Age N Calculator Pro – Family Edition",
+  "description": "A professional age calculator for families with live tracking, birthday alerts, and data backup.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
