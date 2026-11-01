@@ -47,6 +47,7 @@ import {
 } from '@/lib/age-utils';
 import { translations, Language } from '@/lib/translations';
 import Image from 'next/image';
+import AdBanner from '@/components/AdBanner';
 
 interface Member {
   id: string;
@@ -554,6 +555,7 @@ export default function AgeCalculatorPage() {
                   </button>
                 )}
               </div>
+              <AdBanner />
             </motion.div>
           </>
         )}
@@ -852,6 +854,7 @@ export default function AgeCalculatorPage() {
                   <Check className="w-6 h-6" /> {t.save}
                 </button>
               </form>
+              <AdBanner />
             </motion.div>
           </div>
         )}
@@ -975,6 +978,7 @@ export default function AgeCalculatorPage() {
           </div>
         )}
       </AnimatePresence>
+      <AdBanner />
     </main>
   );
 }
