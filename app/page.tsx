@@ -48,6 +48,8 @@ import {
 import { translations, Language } from '@/lib/translations';
 import Image from 'next/image';
 import AdBanner from '@/components/AdBanner';
+import { PWAInstallButton } from '@/components/PWAInstallButton';
+import { OfflineIndicator } from '@/components/OfflineIndicator';
 
 interface Member {
   id: string;
@@ -541,6 +543,8 @@ export default function AgeCalculatorPage() {
                       <span className="font-medium">{t.notifActive}</span>
                     </div>
                   )}
+                  
+                  <PWAInstallButton language={language} />
                 </div>
               </div>
 
@@ -979,6 +983,7 @@ export default function AgeCalculatorPage() {
         )}
       </AnimatePresence>
       <AdBanner />
+      <OfflineIndicator language={language} />
     </main>
   );
 }
