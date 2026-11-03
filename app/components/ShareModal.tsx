@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { 
   Share2, 
   X, 
@@ -13,11 +13,11 @@ import {
   Globe, 
   Users,
   MessageCircle,
-  Send,
-  ExternalLink
+  Send
 } from 'lucide-react';
 import { Member } from '@/types/member';
 import { Language, translations } from '@/lib/translations';
+import { AdBanner } from '@/components/AdBanner';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -106,15 +106,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}`;
   const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(siteUrl)}&text=${encodeURIComponent(shareText)}`;
 
-  const isNativeShareSupported = typeof navigator !== 'undefined' && Boolean(navigator.share);
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-lg bg-[#09132b] border border-neon-cyan/30 rounded-3xl p-6 sm:p-7 shadow-[0_0_50px_rgba(0,242,254,0.2)] relative"
+        className="w-full max-w-lg bg-[#09132b] border border-neon-cyan/30 rounded-3xl p-6 sm:p-7 shadow-[0_0_50px_rgba(0,242,254,0.2)] relative max-h-[90vh] overflow-y-auto"
       >
         {/* Close Button */}
         <button
@@ -291,6 +289,11 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             </div>
           </div>
         )}
+
+        {/* Ad Banner at the bottom of Share Modal */}
+        <div className="mt-5 pt-3 border-t border-white/10 flex justify-center">
+          <AdBanner />
+        </div>
       </motion.div>
     </div>
   );

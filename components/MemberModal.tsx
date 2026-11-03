@@ -7,6 +7,7 @@ import { X, Camera, User, AlertCircle } from 'lucide-react';
 import { Member } from '@/types/member';
 import { Language, translations } from '@/lib/translations';
 import { relationsData } from '@/lib/age-utils';
+import { AdBanner } from '@/components/AdBanner';
 
 interface MemberModalProps {
   isOpen: boolean;
@@ -318,6 +319,11 @@ export const MemberModal: React.FC<MemberModalProps> = ({
               </div>
             </motion.div>
           )}
+
+          {/* Ad Banner at the bottom of Modal */}
+          <div className="pt-2 flex justify-center">
+            <AdBanner />
+          </div>
 
           {/* Form Actions */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">

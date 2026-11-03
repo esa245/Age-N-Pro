@@ -15,6 +15,7 @@ import {
   Share2
 } from 'lucide-react';
 import { Language, translations } from '@/lib/translations';
+import { AdBanner } from '@/components/AdBanner';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -201,12 +202,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="pt-4 border-t border-white/10 text-center">
-              <p className="text-xs font-semibold text-white/80">Age N Pro • Family Edition</p>
-              <p className="text-[11px] text-text-muted mt-0.5">
-                {language === 'bn' ? 'সম্পূর্ণ অফলাইন ও নিরাপদ স্টোরেজ' : '100% Offline & Private Storage'}
-              </p>
+            {/* Bottom Section: Ad Banner and Footer */}
+            <div className="pt-4 border-t border-white/10 space-y-3">
+              {/* Ad Banner at the bottom of sidebar */}
+              <div className="flex justify-center overflow-hidden">
+                <AdBanner />
+              </div>
+
+              {/* Footer */}
+              <div className="text-center">
+                <p className="text-xs font-semibold text-white/80">Age N Pro • Family Edition</p>
+                <p className="text-[11px] text-text-muted mt-0.5">
+                  {language === 'bn' ? 'সম্পূর্ণ অফলাইন ও নিরাপদ স্টোরেজ' : '100% Offline & Private Storage'}
+                </p>
+              </div>
             </div>
           </motion.div>
         </div>

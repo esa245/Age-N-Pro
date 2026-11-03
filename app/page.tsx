@@ -16,6 +16,7 @@ import { MemberModal } from '@/components/MemberModal';
 import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
 import { ShareModal } from '@/components/ShareModal';
 import { Sidebar } from '@/components/Sidebar';
+import { AdBanner } from '@/components/AdBanner';
 
 export default function AgeCalculatorPage() {
   const {
@@ -250,6 +251,11 @@ export default function AgeCalculatorPage() {
             </p>
           </div>
         )}
+
+        {/* 5. Ad Banner placed at the bottom of the home page */}
+        <div className="my-5 flex justify-center">
+          <AdBanner />
+        </div>
       </main>
 
       {/* Add / Edit Member Modal */}
