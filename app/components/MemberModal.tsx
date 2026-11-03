@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Camera, Calendar, User, Heart, AlertCircle } from 'lucide-react';
+import { motion } from 'motion/react';
+import { X, Camera, User, AlertCircle } from 'lucide-react';
 import { Member } from '@/types/member';
 import { Language, translations } from '@/lib/translations';
 import { relationsData } from '@/lib/age-utils';
@@ -26,62 +26,32 @@ export const MemberModal: React.FC<MemberModalProps> = ({
   const t = translations[language];
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [name, setName] = useState('');
-  const [relation, setRelation] = useState('অন্যান্য');
-  const [dobDay, setDobDay] = useState('1');
-  const [dobMonth, setDobMonth] = useState('0');
-  const [dobYear, setDobYear] = useState(new Date().getFullYear().toString());
-  const [isDeceased, setIsDeceased] = useState(false);
-  const [dodDay, setDodDay] = useState('1');
-  const [dodMonth, setDodMonth] = useState('0');
-  const [dodYear, setDodYear] = useState(new Date().getFullYear().toString());
-  const [photo, setPhoto] = useState('');
+  // Parse birth date
+  const birthDate = editingMember ? new Date(editingMember.dob) : null;
+  const isBirthValid = birthDate && !isNaN(birthDate.getTime());
+
+  // Parse death date
+  const deathDate = editingMember?.dod ? new Date(editingMember.dod) : null;
+  const isDeathValid = deathDate && !isNaN(deathDate.getTime());
+
+  const [name, setName] = useState(() => editingMember?.name || '');
+  const [relation, setRelation] = useState(() => editingMember?.relation || 'অন্যান্য');
+  const [dobDay, setDobDay] = useState(() => (isBirthValid ? birthDate.getDate().toString() : '1'));
+  const [dobMonth, setDobMonth] = useState(() => (isBirthValid ? birthDate.getMonth().toString() : '0'));
+  const [dobYear, setDobYear] = useState(() =>
+    isBirthValid ? birthDate.getFullYear().toString() : (new Date().getFullYear() - 25).toString()
+  );
+  const [isDeceased, setIsDeceased] = useState(() => Boolean(editingMember?.dod));
+  const [dodDay, setDodDay] = useState(() => (isDeathValid ? deathDate.getDate().toString() : '1'));
+  const [dodMonth, setDodMonth] = useState(() => (isDeathValid ? deathDate.getMonth().toString() : '0'));
+  const [dodYear, setDodYear] = useState(() =>
+    isDeathValid ? deathDate.getFullYear().toString() : new Date().getFullYear().toString()
+  );
+  const [photo, setPhoto] = useState(() => editingMember?.photo || '');
   const [error, setError] = useState('');
-
-  // Populate data when editingMember changes
-  useEffect(() => {
-    if (editingMember) {
-      setName(editingMember.name);
-      setRelation(editingMember.relation);
-      setPhoto(editingMember.photo || '');
-
-      const birth = new Date(editingMember.dob);
-      if (!isNaN(birth.getTime())) {
-        setDobDay(birth.getDate().toString());
-        setDobMonth(birth.getMonth().toString());
-        setDobYear(birth.getFullYear().toString());
-      }
-
-      if (editingMember.dod) {
-        setIsDeceased(true);
-        const death = new Date(editingMember.dod);
-        if (!isNaN(death.getTime())) {
-          setDodDay(death.getDate().toString());
-          setDodMonth(death.getMonth().toString());
-          setDodYear(death.getFullYear().toString());
-        }
-      } else {
-        setIsDeceased(false);
-      }
-    } else {
-      // Default reset
-      setName('');
-      setRelation('অন্যান্য');
-      setDobDay('1');
-      setDobMonth('0');
-      setDobYear((new Date().getFullYear() - 25).toString());
-      setIsDeceased(false);
-      setDodDay('1');
-      setDodMonth('0');
-      setDodYear(new Date().getFullYear().toString());
-      setPhoto('');
-    }
-    setError('');
-  }, [editingMember, isOpen]);
 
   if (!isOpen) return null;
 
-  // Handle Photo File selection and convert to Base64
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -106,10 +76,7 @@ export const MemberModal: React.FC<MemberModalProps> = ({
       return;
     }
 
-    // Build DOB ISO string YYYY-MM-DD
-    const birthDate = new Date(Number(dobYear), Number(dobMonth), Number(dobDay));
     const dobString = `${dobYear}-${String(Number(dobMonth) + 1).padStart(2, '0')}-${String(dobDay).padStart(2, '0')}`;
-
     let dodString: string | undefined = undefined;
     if (isDeceased) {
       dodString = `${dodYear}-${String(Number(dodMonth) + 1).padStart(2, '0')}-${String(dodDay).padStart(2, '0')}`;
@@ -137,7 +104,6 @@ export const MemberModal: React.FC<MemberModalProps> = ({
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         className="w-full max-w-lg bg-[#09132b] border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl relative my-8"
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-text-muted hover:text-white transition-colors cursor-pointer"
@@ -145,7 +111,6 @@ export const MemberModal: React.FC<MemberModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Modal Title */}
         <h2 className="text-xl sm:text-2xl font-extrabold text-white mb-6">
           {editingMember ? t.editInfo : t.addNew}
         </h2>
@@ -185,9 +150,7 @@ export const MemberModal: React.FC<MemberModalProps> = ({
             <div className="flex-1">
               <p className="text-sm font-semibold text-white">{t.selectPhoto}</p>
               <p className="text-xs text-text-muted mt-0.5">
-                {language === 'bn'
-                  ? 'গ্যালারি থেকে ছবি আপলোড করুন (ঐচ্ছিক)'
-                  : 'Upload from device (Optional)'}
+                {language === 'bn' ? 'গ্যালারি থেকে ছবি আপলোড করুন (ঐচ্ছিক)' : 'Upload from device (Optional)'}
               </p>
               <input
                 ref={fileInputRef}
@@ -247,13 +210,12 @@ export const MemberModal: React.FC<MemberModalProps> = ({
             </select>
           </div>
 
-          {/* Date of Birth Picker (Day, Month, Year) */}
+          {/* Date of Birth Picker */}
           <div>
             <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">
               {t.dob}
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {/* Day */}
               <select
                 value={dobDay}
                 onChange={(e) => setDobDay(e.target.value)}
@@ -266,7 +228,6 @@ export const MemberModal: React.FC<MemberModalProps> = ({
                 ))}
               </select>
 
-              {/* Month */}
               <select
                 value={dobMonth}
                 onChange={(e) => setDobMonth(e.target.value)}
@@ -279,7 +240,6 @@ export const MemberModal: React.FC<MemberModalProps> = ({
                 ))}
               </select>
 
-              {/* Year */}
               <select
                 value={dobYear}
                 onChange={(e) => setDobYear(e.target.value)}
@@ -309,7 +269,7 @@ export const MemberModal: React.FC<MemberModalProps> = ({
             </label>
           </div>
 
-          {/* Date of Death Picker (if deceased) */}
+          {/* Date of Death Picker */}
           {isDeceased && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}

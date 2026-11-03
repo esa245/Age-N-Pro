@@ -4,7 +4,6 @@ import React, { useMemo } from 'react';
 import { Users, Crown, Baby, Cake } from 'lucide-react';
 import { Member } from '@/types/member';
 import { Language } from '@/lib/translations';
-import { getDetailedAge } from '@/lib/age-utils';
 
 interface StatsSummaryProps {
   members: Member[];
@@ -42,7 +41,6 @@ export const StatsSummary: React.FC<StatsSummaryProps> = ({ members, language })
       const bday = new Date(m.dob);
       let nextBday = new Date(now.getFullYear(), bday.getMonth(), bday.getDate());
 
-      // If already occurred this year, look at next year
       if (
         nextBday.getTime() <
         new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
@@ -77,7 +75,10 @@ export const StatsSummary: React.FC<StatsSummaryProps> = ({ members, language })
           <span className="text-[11px] font-semibold text-text-muted/80 tracking-wider uppercase block">
             {language === 'bn' ? 'TOTAL MEMBERS' : 'TOTAL MEMBERS'}
           </span>
-          <span className="text-base sm:text-lg font-bold text-neon-yellow block truncate mt-0.5">
+          <span
+            suppressHydrationWarning
+            className="text-base sm:text-lg font-bold text-neon-yellow block truncate mt-0.5"
+          >
             {stats.total} {stats.total === 1 ? 'Persons' : 'Persons'}
           </span>
         </div>
@@ -92,7 +93,10 @@ export const StatsSummary: React.FC<StatsSummaryProps> = ({ members, language })
           <span className="text-[11px] font-semibold text-text-muted/80 tracking-wider uppercase block">
             {language === 'bn' ? 'OLDEST MEMBER' : 'OLDEST MEMBER'}
           </span>
-          <span className="text-base sm:text-lg font-bold text-neon-yellow block truncate mt-0.5">
+          <span
+            suppressHydrationWarning
+            className="text-base sm:text-lg font-bold text-neon-yellow block truncate mt-0.5"
+          >
             {stats.oldest || '-'}
           </span>
         </div>
@@ -107,7 +111,10 @@ export const StatsSummary: React.FC<StatsSummaryProps> = ({ members, language })
           <span className="text-[11px] font-semibold text-text-muted/80 tracking-wider uppercase block">
             {language === 'bn' ? 'YOUNGEST MEMBER' : 'YOUNGEST MEMBER'}
           </span>
-          <span className="text-base sm:text-lg font-bold text-neon-yellow block truncate mt-0.5">
+          <span
+            suppressHydrationWarning
+            className="text-base sm:text-lg font-bold text-neon-yellow block truncate mt-0.5"
+          >
             {stats.youngest || '-'}
           </span>
         </div>
@@ -122,7 +129,10 @@ export const StatsSummary: React.FC<StatsSummaryProps> = ({ members, language })
           <span className="text-[11px] font-semibold text-text-muted/80 tracking-wider uppercase block">
             {language === 'bn' ? 'UPCOMING BIRTHDAY' : 'UPCOMING BIRTHDAY'}
           </span>
-          <span className="text-base sm:text-lg font-bold text-neon-yellow block truncate mt-0.5">
+          <span
+            suppressHydrationWarning
+            className="text-base sm:text-lg font-bold text-neon-yellow block truncate mt-0.5"
+          >
             {stats.upcomingBday
               ? `${stats.upcomingBday.name} (${stats.upcomingBday.daysLeft} days)`
               : '-'}

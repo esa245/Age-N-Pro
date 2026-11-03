@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
-import { Pencil, Trash2, ChevronDown, ChevronUp, Timer, Cake } from 'lucide-react';
+import { Pencil, Trash2, Timer, Cake } from 'lucide-react';
 import { Member } from '@/types/member';
 import { Language } from '@/lib/translations';
 import { getDetailedAge } from '@/lib/age-utils';
@@ -73,7 +73,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                 </span>
 
                 {/* Age String: "20Y 6M 0D" in bright yellow */}
-                <span className="text-neon-yellow font-bold text-sm sm:text-base tracking-wide">
+                <span
+                  suppressHydrationWarning
+                  className="text-neon-yellow font-bold text-sm sm:text-base tracking-wide"
+                >
                   {ageCompact}
                 </span>
               </div>
@@ -123,7 +126,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                   <Timer className="w-3.5 h-3.5 animate-spin" />
                   <span>{isDeceased ? 'Total Lifespan Seconds' : 'Total Seconds (Live)'}</span>
                 </div>
-                <span className="font-mono text-lg sm:text-xl font-extrabold text-white tracking-wider">
+                <span
+                  suppressHydrationWarning
+                  className="font-mono text-lg sm:text-xl font-extrabold text-white tracking-wider"
+                >
                   {age.totalSeconds.toLocaleString()}
                 </span>
               </div>
@@ -131,19 +137,19 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               {/* Total Detailed Breakdown */}
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
                 <div className="bg-white/5 rounded-xl p-2">
-                  <span className="font-bold text-white block">
+                  <span suppressHydrationWarning className="font-bold text-white block">
                     {(age.years * 12 + age.months).toLocaleString()}
                   </span>
                   <span className="text-[10px] text-text-muted">Total Months</span>
                 </div>
                 <div className="bg-white/5 rounded-xl p-2">
-                  <span className="font-bold text-white block">
+                  <span suppressHydrationWarning className="font-bold text-white block">
                     {age.totalDays.toLocaleString()}
                   </span>
                   <span className="text-[10px] text-text-muted">Total Days</span>
                 </div>
                 <div className="bg-white/5 rounded-xl p-2">
-                  <span className="font-bold text-white block">
+                  <span suppressHydrationWarning className="font-bold text-white block">
                     {age.totalHours.toLocaleString()}
                   </span>
                   <span className="text-[10px] text-text-muted">Total Hours</span>
@@ -157,7 +163,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                     <Cake className="w-3.5 h-3.5" />
                     <span>Next Birthday:</span>
                   </div>
-                  <span className="font-bold text-white">
+                  <span suppressHydrationWarning className="font-bold text-white">
                     {age.daysUntilBday === 0 ? 'Today 🎉' : `${age.daysUntilBday} days left`}
                   </span>
                 </div>

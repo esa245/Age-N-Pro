@@ -15,7 +15,6 @@ import {
   Share2
 } from 'lucide-react';
 import { Language, translations } from '@/lib/translations';
-import { PWAInstallButton } from './PWAInstallButton';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -199,9 +198,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     {notificationPermission === 'granted' ? 'ON' : 'OFF'}
                   </span>
                 </button>
-
-                {/* PWA Install Button */}
-                <PWAInstallButton language={language} />
               </div>
             </div>
 

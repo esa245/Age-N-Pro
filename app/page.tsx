@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { CheckCircle2 } from 'lucide-react';
 import { Member } from '@/types/member';
@@ -16,13 +16,10 @@ import { MemberModal } from '@/components/MemberModal';
 import { DeleteConfirmModal } from '@/components/DeleteConfirmModal';
 import { ShareModal } from '@/components/ShareModal';
 import { Sidebar } from '@/components/Sidebar';
-import AdBanner from '@/components/AdBanner';
-import { OfflineIndicator } from '@/components/OfflineIndicator';
 
 export default function AgeCalculatorPage() {
   const {
     members,
-    isLoaded,
     addMember,
     updateMember,
     deleteMember,
@@ -31,7 +28,14 @@ export default function AgeCalculatorPage() {
     importSharedData,
   } = useFamilyStorage();
 
-  const [language, setLanguage] = useState<Language>('bn');
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('APP_LANGUAGE') as Language;
+      if (saved === 'bn' || saved === 'en') return saved;
+    }
+    return 'bn';
+  });
+
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -42,8 +46,13 @@ export default function AgeCalculatorPage() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Notification state
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  // Notification state initialized with lazy function
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      return Notification.permission;
+    }
+    return 'default';
+  });
   const notifiedBirthdaysRef = useRef<Set<string>>(new Set());
 
   // Toast state
@@ -51,19 +60,9 @@ export default function AgeCalculatorPage() {
 
   const t = translations[language];
 
-  // Initial language load
-  useEffect(() => {
-    try {
-      const savedLang = localStorage.getItem('APP_LANGUAGE') as Language;
-      if (savedLang === 'bn' || savedLang === 'en') {
-        setLanguage(savedLang);
-      }
-      if (typeof window !== 'undefined' && 'Notification' in window) {
-        setNotificationPermission(Notification.permission);
-      }
-    } catch (e) {
-      // Ignored
-    }
+  const showToast = useCallback((msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
   }, []);
 
   // Shared family data import via URL
@@ -76,18 +75,18 @@ export default function AgeCalculatorPage() {
         const decoded = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(shareData)))));
         if (Array.isArray(decoded) && decoded.length > 0) {
           const count = importSharedData(decoded);
-          showToast(
+          const msg =
             language === 'bn'
               ? `${count} জন সদস্যের তথ্য যোগ করা হয়েছে!`
-              : `Imported ${count} members!`
-          );
+              : `Imported ${count} members!`;
+          setTimeout(() => showToast(msg), 100);
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
     } catch (err) {
       console.error('Failed to parse share data', err);
     }
-  }, [importSharedData, language]);
+  }, [importSharedData, language, showToast]);
 
   // Live timer for exact seconds counters
   useEffect(() => {
@@ -124,11 +123,6 @@ export default function AgeCalculatorPage() {
       }
     });
   }, [members, notificationPermission, t]);
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
 
   const handleToggleLanguage = () => {
     const next: Language = language === 'bn' ? 'en' : 'bn';
@@ -256,15 +250,11 @@ export default function AgeCalculatorPage() {
             </p>
           </div>
         )}
-
-        {/* 5. Ad Banner placed directly below member cards */}
-        <div className="my-5 flex justify-center">
-          <AdBanner />
-        </div>
       </main>
 
       {/* Add / Edit Member Modal */}
       <MemberModal
+        key={editingMember ? editingMember.id : 'new-member-modal'}
         isOpen={isMemberModalOpen}
         onClose={() => {
           setIsMemberModalOpen(false);
@@ -321,9 +311,6 @@ export default function AgeCalculatorPage() {
           </div>
         )}
       </AnimatePresence>
-
-      {/* Offline Status Indicator */}
-      <OfflineIndicator language={language} />
     </div>
   );
 }

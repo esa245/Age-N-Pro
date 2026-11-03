@@ -1,46 +1,52 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useSyncExternalStore, useCallback, useMemo } from 'react';
 import { Member } from '@/types/member';
 
 const STORAGE_KEY = 'AGE_CALC_FAMILY_MEMBERS_V2';
 
+function subscribe(callback: () => void) {
+  window.addEventListener('storage', callback);
+  window.addEventListener('family-storage-updated', callback);
+  return () => {
+    window.removeEventListener('storage', callback);
+    window.removeEventListener('family-storage-updated', callback);
+  };
+}
+
+function getSnapshot(): string {
+  try {
+    const val = localStorage.getItem(STORAGE_KEY);
+    if (val) return val;
+    const legacy = localStorage.getItem('AGE_CALC_FAMILY_MEMBERS');
+    if (legacy) return legacy;
+    return '[]';
+  } catch {
+    return '[]';
+  }
+}
+
+function getServerSnapshot(): string {
+  return '[]';
+}
+
 export function useFamilyStorage() {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const rawData = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  // Initial load from localStorage
-  useEffect(() => {
+  const members = useMemo<Member[]>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setMembers(parsed);
-        }
-      } else {
-        // Check legacy key if exists
-        const legacy = localStorage.getItem('AGE_CALC_FAMILY_MEMBERS');
-        if (legacy) {
-          const parsed = JSON.parse(legacy);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setMembers(parsed);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Failed to load members from localStorage', err);
-    } finally {
-      setIsLoaded(true);
+      const parsed = JSON.parse(rawData);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // Ignored
     }
-  }, []);
+    return [];
+  }, [rawData]);
 
-  // Save to localStorage whenever members change after initial load
   const persistMembers = useCallback((updated: Member[]) => {
-    setMembers(updated);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new Event('family-storage-updated'));
     } catch (err) {
       console.error('Failed to save to localStorage', err);
     }
@@ -87,7 +93,6 @@ export function useFamilyStorage() {
           const content = e.target?.result as string;
           const parsed = JSON.parse(content);
           if (Array.isArray(parsed)) {
-            // Validate required fields
             const valid = parsed.filter((m: any) => m && m.name && m.dob);
             if (valid.length > 0) {
               persistMembers(valid);
@@ -106,7 +111,6 @@ export function useFamilyStorage() {
   }, [persistMembers]);
 
   const importSharedData = useCallback((imported: Member[]) => {
-    // Merge without duplicates by ID or name+dob
     const existingKeys = new Set(members.map((m) => `${m.name}_${m.dob}`));
     const newItems = imported.filter((m) => !existingKeys.has(`${m.name}_${m.dob}`));
     const merged = [...members, ...newItems];
@@ -116,7 +120,6 @@ export function useFamilyStorage() {
 
   return {
     members,
-    isLoaded,
     addMember,
     updateMember,
     deleteMember,
