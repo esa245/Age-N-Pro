@@ -15,7 +15,7 @@ import {
   Share2
 } from 'lucide-react';
 import { Language, translations } from '@/lib/translations';
-import { PWAInstallButton } from '@/components/PWAInstallButton';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface SidebarProps {
   isOpen: boolean;
