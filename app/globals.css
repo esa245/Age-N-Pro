@@ -1,9 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-poppins), var(--font-hind-siliguri), ui-sans-serif, system-ui;
-  --font-bengali: var(--font-hind-siliguri), sans-serif;
-  
   --color-bg-dark: #040817;
   --color-card-bg: #09132b;
   --color-card-inner: #0d1b3e;
@@ -16,10 +13,8 @@
 }
 
 body {
+  background-color: #040817;
   background-image: radial-gradient(circle at 50% 0%, #102456 0%, #040817 75%);
+  color: #ffffff;
   min-height: 100vh;
-}
-
-.font-bengali {
-  font-family: var(--font-hind-siliguri);
 }
